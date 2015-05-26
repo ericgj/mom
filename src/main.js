@@ -13,14 +13,15 @@ var InvalidUpdateInRender = TypedError({
     "The view should not have any side effects.\n",
 })
 
-function main(opts, view){
+
+module.exports = function(opts, view){
   opts = opts || {}
   
   var currentState = null
-  var create = opts.create || vdom.create
-  var diff = opts.diff || vdom.diff
-  var patch = opts.patch || vdom.patch
-  var createOnly = opts.createOnly
+  var create = opts.create 
+  var diff = opts.diff 
+  var patch = opts.patch 
+  var createOnly = !!opts.createOnly
   var redrawScheduled = false
 
   var tree = view()

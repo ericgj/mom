@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<body>
+  <div id="target"></div>
+  <script src="../jspm_packages/system.js"></script>
+  <script src="../config.js"></script>
+  <script>
+    Promise.all([
+      System.import('index'),
+      System.import('mori')
+    ]).then( function(libs){
+      var core = libs[0].core
+        , vdom = libs[0].vdom
+        , h    = vdom.h
+        , mori = libs[1]
+
+      // console.log(Object.keys(core));
+
+      var atom = core.atom({count: 0});
+
+      core.root(atom, counting, document.querySelector('#target'));
+
+      function counting(cursor){
+        return h('div.counting', [
+          h('span', "Click count: " + cursor.get(['count']) + ". "),
+          h('input', { type: 'button', value: 'Click me!',
+                       onclick: cursor.transact.bind(cursor, ['count'], mori.inc)
+                     }
+           )
+        ]);
+      }
+
+      function inc(d){ return d + 1; }
+
+    });
+  </script>
+</body>
+</html>

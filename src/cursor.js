@@ -62,6 +62,8 @@ module.exports = function Cursor_(getter, setter){
     return newv;
   }
   
+}
+
 function concat(a,b){
   a = isArray(a) ? a : [a];
   b = isArray(b) ? b : [b];

@@ -1,10 +1,12 @@
 'use strict';
 
-var vdom = require('./vdom');
+var mori = require('mori');
 var xtend = require('xtend');
+var observ = require('observ');
+var vdom = require('./vdom');
 
 var core = module.exports = {
-  atom: require('observ'),
+  atom: atom,
   cursor: require('./cursor'),
   toCursor: toCursor,
   root: root,
@@ -18,17 +20,21 @@ var core = module.exports = {
   }
 }
 
+function atom(o){
+  return observ(mori.toClj(o));
+}
+
 function toCursor(atom){
   return core.cursor(
     function get(){ return atom(); },
-    function set(v){ atom(v); }    
+    function set(v){ atom.set(v); }    
   )([]);
 }
 
 // note: unlike in Om, this is not idempotent.
 function root(atom, app, target, opts){
   var cursor = toCursor(atom);
-  var loop = mainfn( build.bind(null, app, cursor, opts) );
+  var loop = mainfn()( build.bind(null, app, cursor, opts) );
   
   atom(loop.update);
   target.appendChild(loop.target);
@@ -53,9 +59,12 @@ function mainfn(){
   return vdom.main.bind(null, 
     xtend(
       {
-        diff: partialRight(vdom.diff, xtend({},core.options.diff)),
-        patch: partialRight(vdom.patch, xtend({},core.options.patch)),
-        create: partialRight(vdom.create, xtend({},core.options.create))
+        diff: vdom.diff,
+        patch: vdom.patch,
+        create: vdom.create
+//        diff: partialRight(vdom.diff, xtend({},core.options.diff)),
+//        patch: partialRight(vdom.patch, xtend({},core.options.patch)),
+//        create: partialRight(vdom.create, xtend({},core.options.create))
       }, core.options.main
     )
   );  
