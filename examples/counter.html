@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <body>
+  <h1>Counter</h1>
   <div id="target"></div>
   <script src="../jspm_packages/system.js"></script>
   <script src="../config.js"></script>
@@ -13,8 +14,6 @@
         , vdom = libs[0].vdom
         , h    = vdom.h
         , mori = libs[1]
-
-      // console.log(Object.keys(core));
 
       var atom = core.atom({count: 0});
 
@@ -29,8 +28,6 @@
            )
         ]);
       }
-
-      function inc(d){ return d + 1; }
 
     });
   </script>
