@@ -78,7 +78,12 @@
       //   const [a,b,c] = cursor.values(['a','b','c'])
       // in ES6 -- since mori structures implement iterator.
 
+      // the interesting thing about this is the rendered data is calculated
+      // from the stored data; the stored data for weight and bmi are not 
+      // necessarily reflected in what's rendered.
+
       function bmi(cursor){
+        cursor.listen( logtx );
         var newdata = calc_bmi();
         var height = mori.get(newdata, 'height')
           , weight = mori.get(newdata, 'weight')
@@ -122,6 +127,12 @@
           cursor.update([param], e.target.value);
           if (!('bmi' == param)) cursor.update(['bmi'], null); 
         }
+      }
+
+      function logtx(txinfo, cursor){
+        console.debug('change: at [%s] from %s to %s', 
+                      txinfo.path.join(','), txinfo.oldValue, txinfo.newValue
+                     );
       }
 
     });

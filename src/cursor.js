@@ -62,7 +62,8 @@ module.exports = function Cursor_(getter, setter){
   
   Cursor.prototype.notify = function(txdata){
     var c = Cursor();  // top-level
-    mori.each(this._listeners, function(_,f){
+    mori.each(this._listeners, function(tuple){
+      var f = mori.first(tuple)
       f(txdata, c);
     });
   }
@@ -83,11 +84,11 @@ module.exports = function Cursor_(getter, setter){
     var oldv = get(path);
     setter( mori.updateIn( getter(), path, f) );
     var newv = get(path);
-    var txdata = mori.hashMap(
-      'path', path,
-      'oldValue', oldv,
-      'newValue', newv
-    );
+    var txdata =  {
+      'path': path,
+      'oldValue': oldv,
+      'newValue': newv
+    };
     if (!(undefined === tag)) txdata = mori.assoc(txdata, 'tag', tag);
     curs.notify(txdata);
     return newv;
