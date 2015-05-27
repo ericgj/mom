@@ -15,10 +15,8 @@ var core = module.exports = {
   build: build,
   buildAll: buildAll,
   options: {
-    main: { emptyTarget: false },
-    diff: {},
-    patch: {},
-    create: {}    
+    main: {},
+    dom: { emptyTarget: false }
   }
 }
 
@@ -45,7 +43,7 @@ function root(atom, app, target, opts){
   
   atom(loop.update);
 
-  if (!!core.options.main.emptyTarget) empty(target);
+  if (!!core.options.dom.emptyTarget) empty(target);
   target.appendChild(loop.target);
   
   return loop;
@@ -70,9 +68,6 @@ function main(view){
         diff: vdom.diff,
         patch: vdom.patch,
         create: vdom.create
-//        diff: partialRight(vdom.diff, xtend({},core.options.diff)),
-//        patch: partialRight(vdom.patch, xtend({},core.options.patch)),
-//        create: partialRight(vdom.create, xtend({},core.options.create))
       }, core.options.main
     ),
     view
@@ -82,12 +77,4 @@ function main(view){
 function empty(el, node){
   while (node = el.firstChild) el.removeChild(node);
   return el;
-}
-
-function partialRight(fn){
-  var args = [].slice.call(arguments,1);
-  return function(){
-    var innerargs = [].slice.call(arguments,0);
-    fn.apply(null, innerargs.concat(args));
-  };
 }
