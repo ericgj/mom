@@ -19,23 +19,25 @@ module.exports = function Cursor_(getter, setter){
     return new Cursor( concat(this.base,addr) );
   }
 
-  Cursor.prototype.get =
-  Cursor.prototype.value = function(addr, defval){
+  Cursor.prototype.value =
+  Cursor.prototype.get = function(addr, defval){
     return get(this.base, addr, defval);
   }
+  
+  Cursor.prototype.state = Cursor.prototype.get.bind(Cursor.prototype, []); 
 
-  Cursor.prototype.values = function(addr, keys, defval){
+  Cursor.prototype.values = function(keys, defval){
     var c = this;
     return keys.reduce( function(v,key){
-        return mori.conj(h, key, c.get(concat(addr,key), defval));
+        return mori.conj(h, key, c.get(key, defval));
       }, mori.vector()
     );
   }
 
-  Cursor.prototype.projection = function(addr, keys, defval){
+  Cursor.prototype.projection = function(keys, defval){
     var c = this;
     return keys.reduce( function(h,key){
-        return mori.assoc(h, key, c.get(concat(addr,key),defval));
+        return mori.assoc(h, key, c.get(key,defval));
       }, mori.hashMap()
     );
   }

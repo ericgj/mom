@@ -21,7 +21,7 @@
 
       function counting(cursor){
         return h('div.counting', [
-          h('span', "Click count: " + cursor.get(['count']) + ". "),
+          h('span', "Click count: " + cursor.get('count') + ". "),
           h('input', { type: 'button', value: 'Click me!',
                        onclick: cursor.transact.bind(cursor, ['count'], mori.inc)
                      }
