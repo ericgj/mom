@@ -9,6 +9,8 @@ var core = module.exports = {
   atom: atom,
   cursor: require('./cursor'),
   toCursor: toCursor,
+  mutable: mori.toJs,
+  immutable: mori.toClj,
   root: root,
   build: build,
   buildAll: buildAll,
@@ -32,9 +34,11 @@ function toCursor(atom){
 }
 
 // note: unlike in Om, this is not idempotent.
+// -- perhaps it should replace or empty the target el each time instead?
+// -- and I would prefer an observ implementation that has a single listener
 function root(atom, app, target, opts){
   var cursor = toCursor(atom);
-  var loop = mainfn()( build.bind(null, app, cursor, opts) );
+  var loop = main( build.bind(null, app, cursor, opts) );
   
   atom(loop.update);
   target.appendChild(loop.target);
@@ -46,7 +50,6 @@ function build(fn, x, opts){
   return fn(x,opts);
 }
 
-// not sure this works; depends on how vnode works
 function buildAll(fn, xs, opts){
   return xs.map( function(x,i){
     build(fn, x, xtend({index: i}, opts));
@@ -55,8 +58,8 @@ function buildAll(fn, xs, opts){
 
 
 
-function mainfn(){
-  return vdom.main.bind(null, 
+function main(view){
+  return vdom.main( 
     xtend(
       {
         diff: vdom.diff,
@@ -66,7 +69,8 @@ function mainfn(){
 //        patch: partialRight(vdom.patch, xtend({},core.options.patch)),
 //        create: partialRight(vdom.create, xtend({},core.options.create))
       }, core.options.main
-    )
+    ),
+    view
   );  
 }
 

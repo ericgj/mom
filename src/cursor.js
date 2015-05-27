@@ -20,12 +20,37 @@ module.exports = function Cursor_(getter, setter){
   }
 
   Cursor.prototype.get =
-  Cursor.prototype.value = function(addr){
-    return get(this.base, addr);
+  Cursor.prototype.value = function(addr, defval){
+    return get(this.base, addr, defval);
+  }
+
+  Cursor.prototype.values = function(addr, keys, defval){
+    var c = this;
+    return keys.reduce( function(v,key){
+        return mori.conj(h, key, c.get(concat(addr,key), defval));
+      }, mori.vector()
+    );
+  }
+
+  Cursor.prototype.projection = function(addr, keys, defval){
+    var c = this;
+    return keys.reduce( function(h,key){
+        return mori.assoc(h, key, c.get(concat(addr,key),defval));
+      }, mori.hashMap()
+    );
+  }
+
+  Cursor.prototype.mutable =
+  Cursor.prototype.js = function(addr, defval){
+    return mori.toJs(this.get(addr,defval));
   }
 
   Cursor.prototype.transact = function(addr, f, tag){
     return transact(this, this.base, addr, f, tag);
+  }
+
+  Cursor.prototype.update = function(addr, v, tag){
+    return this.transact(addr, function(){ return v; }, tag);
   }
 
   Cursor.prototype.listen = function(key, f){
@@ -42,9 +67,13 @@ module.exports = function Cursor_(getter, setter){
   
   return Cursor;
 
-  function get(base,addr){
-    if (undefined === addr) return get(base, []);
-    return mori.getIn( getter(), concat(base,addr) );
+  function get(base,addr,defval){
+    if (undefined === addr) return get(base, [], defval);
+    if (undefined === defval){
+      return mori.getIn( getter(), concat(base,addr) );
+    } else {
+      return mori.getIn( getter(), concat(base,addr), defval );
+    }
   }
 
   function transact(curs,base,addr,f,tag){

@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+  <style type="text/css">
+    #target { width: 50%; }
+  </style>
+</head>
+<body>
+  <h1>BMI Calculator</h1>
+  <div id="target"></div>
+  <script src="/jspm_packages/system.js"></script>
+  <script src="/config.js"></script>
+  <script>
+    Promise.all([
+      System.import('index'),
+      System.import('mori')
+    ]).then( function(libs){
+      var core = libs[0].core
+        , vdom = libs[0].vdom
+        , h    = vdom.h
+        , mori = libs[1]
+
+      var RANGES = mori.toClj([ 
+        [ [0,    18.5    ], 'underweight'], 
+        [ [18.5, 25      ], 'normal'], 
+        [ [25,   30      ], 'overweight'],
+        [ [30, undefined ], 'obese']
+      ]);
+
+      var DX_COLORS = mori.toClj({
+        'underweight': 'orange',
+        'normal': 'green',
+        'overweight': 'orange',
+        'obese': 'red'
+      });
+
+
+      var atom = core.atom({height: 180, weight: 80});
+
+      // note: uses atom data directly; does not update
+      // must be in same lexical scope as atom, but that's a good thing
+      function calc_bmi(){
+        var cur = atom()
+          , height = mori.get(cur, 'height')
+          , weight = mori.get(cur, 'weight')
+          , bmi    = mori.get(cur, 'bmi',null)
+          , h = height/100
+        if (null === bmi){
+          return mori.assoc(cur, 'bmi', (weight / (h * h)));
+        } else {
+          return mori.assoc(cur, 'weight', (bmi * h * h));
+        }
+      }
+
+      // kind of a pain in the ass to manipulate mori structures
+      function bmi_dx(bmi){
+        return mori.first(mori.rest(
+          mori.first(
+            mori.filter( function(vec){ 
+              var range = mori.first(vec)
+                , dx    = mori.first(mori.rest(vec))
+                , lo    = mori.first(range)
+                , hi    = mori.first(mori.rest(range))
+              return ((undefined === lo || bmi > lo) && 
+                      (undefined === hi || bmi <= hi)); 
+            }, RANGES)
+          )
+        ));
+      }
+
+      function bmi_color(dx){
+        return mori.get(DX_COLORS, dx, 'inherit');
+      }
+
+      core.root(atom, bmi, document.querySelector('#target'));
+
+      // annoying to get data out of mori like this, but from a cursor you can do:
+      //   const [a,b,c] = cursor.values([],['a','b','c'])
+      // in ES6 -- since mori structures implement iterator.
+
+      function bmi(cursor){
+        var newdata = calc_bmi();
+        var height = mori.get(newdata, 'height')
+          , weight = mori.get(newdata, 'weight')
+          , bmi    = mori.get(newdata, 'bmi')
+          , dx = bmi_dx(bmi)
+          , color = bmi_color(dx);
+
+        return h('div.calc', [
+          h('div.height', [
+            h('span', 'Height: ' + Math.round(height) + 'cm'),
+            slider(cursor, 'height', height, 100, 220)
+          ]),
+          h('div.weight',[ 
+            h('span', 'Weight: ' + Math.round(weight) + 'kg'),
+            slider(cursor, 'weight', weight, 30, 150)
+          ]),
+          h('div.bmi', [
+            h('span', 'BMI: ' + Math.round(bmi)), 
+            h('span', {style: {color: color}}, dx),
+            slider(cursor, 'bmi', bmi, 10, 50)
+          ])
+        ]);
+      }
+
+      // note subcomponent is simply called rather than using core.build,
+      // similar to Reagent vs. Om. I think this is fine for generic components,
+      // and I feel Om is a bit top-heavy with options, but there are advantages 
+      // to having a build step -- for instance, dealing with vdom keys in a 
+      // standard way; and 'globally defined' instrumentation.
+
+      function slider(cursor,param,value,min,max){
+        return h('input', { type: 'range', value: value, min: min, max: max,
+                            style: {width: '100%'},
+                            onchange: change_param(cursor,param)
+                          }
+                );
+      }
+
+      function change_param(cursor, param){
+        return function(e){
+          cursor.update([param], e.target.value);
+          if (!('bmi' == param)) cursor.update(['bmi'], null); 
+        }
+      }
+
+    });
+  </script>
+</body>
+</html>
+
