@@ -2,7 +2,7 @@
 
 var mori = require('mori');
 var xtend = require('xtend');
-var observ = require('observ');
+var observ = require('./observ');
 var vdom = require('./vdom');
 
 var core = module.exports = {
@@ -15,7 +15,7 @@ var core = module.exports = {
   build: build,
   buildAll: buildAll,
   options: {
-    main: {},
+    main: { emptyTarget: false },
     diff: {},
     patch: {},
     create: {}    
@@ -33,14 +33,19 @@ function toCursor(atom){
   )([]);
 }
 
-// note: unlike in Om, this is not idempotent.
-// -- perhaps it should replace or empty the target el each time instead?
-// -- and I would prefer an observ implementation that has a single listener
+/* Mount root component and bind atom updates to RAF.
+
+   Note: this is *mostly* idempotent, assuming your target container can be
+   emptied each time and the emptyTarget option is set. Otherwise, you will
+   need to manage clearing out the target yourself before calling root again.
+*/
 function root(atom, app, target, opts){
   var cursor = toCursor(atom);
   var loop = main( build.bind(null, app, cursor, opts) );
   
   atom(loop.update);
+
+  if (!!core.options.main.emptyTarget) empty(target);
   target.appendChild(loop.target);
   
   return loop;
@@ -72,6 +77,11 @@ function main(view){
     ),
     view
   );  
+}
+
+function empty(el, node){
+  while (node = el.firstChild) el.removeChild(node);
+  return el;
 }
 
 function partialRight(fn){

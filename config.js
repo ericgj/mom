@@ -13,7 +13,6 @@ System.config({
     "error": "npm:error@4.4.0",
     "is-array": "npm:is-array@1.0.1",
     "mori": "npm:mori@0.3.2",
-    "observ": "npm:observ@0.2.0",
     "raf": "npm:raf@3.0.0",
     "virtual-dom": "npm:virtual-dom@2.0.1",
     "xtend": "npm:xtend@4.0.0",
