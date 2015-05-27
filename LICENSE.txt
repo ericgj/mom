@@ -1,8 +1,6 @@
-/*
+The MIT License (MIT)
 
-Adapted from https://github.com/Raynos/observ
-
-Copyright © 2014 Raynos.
+Copyright © 2015, Eric Gjertsen <ericgj72@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -22,27 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-*/
 
-'use strict';
+---------------
 
-module.exports = Observable;
 
-function Observable(value) {
-  var listener;
-  value = value === undefined ? null : value
-
-  observable.set = function (v) {
-    value = v
-    if (listener) listener(v);
-  }
-
-  return observable
-
-  function observable(fn) {
-    if (!fn) {
-      return value
-    }
-    listener = fn;
-  }
-}
