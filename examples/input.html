@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<body>
+  <h1>Input</h1>
+  <p>Tests that re-rendering input elements doesn't reset current display value,
+     but value is set from state on initial render.
+  </p>
+  <p>Note this is a typical scenario where it doesn't matter that input elements
+     retain state that may be out of sync with with app state. The sync happens
+     on input field change (onchange), not on each keypress.
+  </p>
+  <div id="target"></div>
+  <script src="/jspm_packages/system.js"></script>
+  <script src="/config.js"></script>
+  <script>
+    Promise.all([
+      System.import('index'),
+      System.import('mori')
+    ]).then( function(libs){
+      var core = libs[0].core
+        , vdom = libs[0].vdom
+        , hooks = libs[0].hooks
+        , h    = vdom.h
+        , mori = libs[1]
+
+      var atom = core.atom({q1: null, started: null, secs: 0});
+
+      core.root(atom, app, document.querySelector('#target'));
+
+      // note having the setTimeout within the render tree is not ideal, as it
+      // means one more scheduled function per second each time something else 
+      // triggers a re-render. 
+
+      // But the method below, essentially setting up a transaction stream 
+      // filtered by tag = 'tick', ends up with increasing scheduled functions
+      // per second as well, possibly in a race condition with cursors that
+      // haven't been fully dereferenced.
+
+      var ontick = txtagged('tick', tickClock);
+
+      function app(cursor){
+        cursor.listen( 'log', logtx );
+        cursor.listen( 'tick', ontick );
+        tickClock(null, cursor);
+        return h('div.app', [
+          h('div.clock', clock(cursor)),
+          h('div.input', input(cursor))
+        ]);
+      }
+
+      function txtagged(tag, fn){
+        return function(txinfo, cursor){
+          if (txinfo.tag == tag){ 
+            fn(txinfo, cursor);
+          }
+        };
+      }
+
+      function tickClock(_, cursor){
+        setTimeout( function(){
+          var t0 = cursor.get('started');
+          var t1 = new Date().valueOf();
+          if (!t0) cursor.update('started', t1);
+          cursor.update('secs', (t1 - ( t0 || t1 ))/1000, 'tick' );
+        }, 1000);
+      } 
+
+      // note value hook
+      function input(cursor){
+        return (
+          h('form', { onsubmit: function(){} }, [
+            h('label', { for: 'q1' }, 'What is your favorite color?' ),
+            h('input', { type: 'text', name: 'q1', value: hooks.InitValue(cursor.get('q1',null)), 
+                         onchange: updateInput(cursor, 'q1')
+                       }
+            )
+          ])
+        );
+      }
+
+      function clock(cursor){
+        return [ 
+          h('span', 'Seconds remaining: '),
+          h('span', '' + Math.max(0, 60 - Math.floor(cursor.get('secs'))) )
+        ];
+      }
+
+      function updateInput(cursor, addr){
+        return function(e){
+          cursor.update(addr, e.target.value);
+        }
+      }
+
+      function logtx(txinfo, cursor){
+        console.debug('change: at [%s] from %s to %s', 
+                      txinfo.path.join(','), txinfo.oldValue, txinfo.newValue
+                     );
+      }
+
+    });
+  </script>
+</body>
+</html>
+

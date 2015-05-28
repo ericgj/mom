@@ -2,6 +2,7 @@
 
 var mori = require('mori');
 var isArray = require('is-array');
+var xtend = require('xtend');
 var identity = function(a){return a;};
 
 module.exports = function Cursor_(getter, setter){
@@ -11,7 +12,7 @@ module.exports = function Cursor_(getter, setter){
     if (!(this instanceof Cursor)) return new Cursor(addr);
     if (arguments.length < 1) return new Cursor([]);
     this.base = addr;
-    this._listeners = mori.hashMap();
+    this._listeners = {};
   }
 
   Cursor.prototype.refine =
@@ -56,16 +57,18 @@ module.exports = function Cursor_(getter, setter){
   }
 
   Cursor.prototype.listen = function(key, f){
-    this._listeners = mori.assoc(this._listeners, key, f);
+    var listeners = xtend({},this._listeners);
+    listeners[key] = f;
+    this._listeners = listeners;
     return this;
   }
   
   Cursor.prototype.notify = function(txdata){
     var c = Cursor();  // top-level
-    mori.each(this._listeners, function(tuple){
-      var f = mori.first(tuple)
+    for (var k in this._listeners){
+      var f = this._listeners[k];
       f(txdata, c);
-    });
+    }
   }
   
   return Cursor;
@@ -89,7 +92,7 @@ module.exports = function Cursor_(getter, setter){
       'oldValue': oldv,
       'newValue': newv
     };
-    if (!(undefined === tag)) txdata = mori.assoc(txdata, 'tag', tag);
+    if (!(undefined === tag)) txdata.tag = tag;
     curs.notify(txdata);
     return newv;
   }

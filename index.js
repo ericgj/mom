@@ -2,5 +2,6 @@
 
 module.exports = {
   core: require('./src/core'),
-  vdom: require('./src/vdom')
+  vdom: require('./src/vdom'),
+  hooks: require('./src/hooks')
 }

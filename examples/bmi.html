@@ -83,7 +83,7 @@
       // necessarily reflected in what's rendered.
 
       function bmi(cursor){
-        cursor.listen( logtx );
+        cursor.listen( 'log', logtx );
         var newdata = calc_bmi();
         var height = mori.get(newdata, 'height')
           , weight = mori.get(newdata, 'weight')
