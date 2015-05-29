@@ -12,7 +12,7 @@ module.exports = function Cursor_(getter, setter){
     if (!(this instanceof Cursor)) return new Cursor(addr);
     if (arguments.length < 1) return new Cursor([]);
     this.base = addr;
-    this._listeners = {};
+    this._listeners = Object.create(null);
   }
 
   Cursor.prototype.refine =
