@@ -11,6 +11,6 @@ var vdom = module.exports = {
 }
 
 // conventional abbreviations
-vdom.h = vdom.html;  
-vdom.s = vdom.svg;
+vdom.h = function h(){ return vdom.html.apply(vdom.html, arguments); }  
+vdom.s = function s(){ return vdom.svg.apply(vdom.svg, arguments); }
 
