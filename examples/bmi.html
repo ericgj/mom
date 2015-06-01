@@ -75,7 +75,7 @@
       core.root(atom, bmi, document.querySelector('#target'));
 
       // annoying to get data out of mori like this, but from a cursor you can do:
-      //   const [a,b,c] = cursor.values(['a','b','c'])
+      //   const [a,b,c] = core.cursor.util.values(['a','b','c'], cursor)
       // in ES6 -- since mori structures implement iterator.
 
       // the interesting thing about this is the rendered data is calculated

@@ -1,8 +1,9 @@
 'use strict';
 
 var mori = require('mori');
-var isArray = require('is-array');
 var xtend = require('xtend');
+var util = require('./util/cursor');
+var concat = util.concat;
 var identity = function(a){return a;};
 
 module.exports = function Cursor_(getter, setter){
@@ -15,8 +16,14 @@ module.exports = function Cursor_(getter, setter){
     this._listeners = Object.create(null);
   }
 
-  Cursor.prototype.refine =
-  Cursor.prototype.child = function(addr){
+  // note: copies listeners
+  Cursor.prototype.clone = function(){
+    var c = new Cursor( this.base.slice(0) );
+    for (k in this._listeners) c.listen(k, this._listeners[k]);
+    return c;
+  }
+
+  Cursor.prototype.refine = function(addr){
     return new Cursor( concat(this.base,addr) );
   }
 
@@ -25,23 +32,7 @@ module.exports = function Cursor_(getter, setter){
     return get(this.base, addr, defval);
   }
   
-  Cursor.prototype.state = Cursor.prototype.get.bind(Cursor.prototype, []); 
-
-  Cursor.prototype.values = function(keys, defval){
-    var c = this;
-    return keys.reduce( function(v,key){
-        return mori.conj(h, key, c.get(key, defval));
-      }, mori.vector()
-    );
-  }
-
-  Cursor.prototype.projection = function(keys, defval){
-    var c = this;
-    return keys.reduce( function(h,key){
-        return mori.assoc(h, key, c.get(key,defval));
-      }, mori.hashMap()
-    );
-  }
+  Cursor.prototype.state = function(){ return this.get(); }
 
   Cursor.prototype.mutable =
   Cursor.prototype.js = function(addr, defval){
@@ -64,7 +55,7 @@ module.exports = function Cursor_(getter, setter){
   }
   
   Cursor.prototype.notify = function(txdata){
-    var c = Cursor();  // top-level
+    var c = Cursor();  // fresh top-level cursor, no listeners
     for (var k in this._listeners){
       var f = this._listeners[k];
       f(txdata, c);
@@ -84,6 +75,7 @@ module.exports = function Cursor_(getter, setter){
 
   function transact(curs,base,addr,f,tag){
     var path = concat(base,addr);
+    if (path.length == 0) throw new Error('Cannot update via top-level cursor');
     var oldv = get(path);
     setter( mori.updateIn( getter(), path, f) );
     var newv = get(path);
@@ -99,9 +91,4 @@ module.exports = function Cursor_(getter, setter){
   
 }
 
-function concat(a,b){
-  a = isArray(a) ? a : [a];
-  b = isArray(b) ? b : [b];
-  return a.concat(b);
-}
 
