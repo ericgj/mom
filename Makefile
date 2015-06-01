@@ -3,7 +3,7 @@ SRC=$(wildcard src/*/*.js)
 
 build: dst/mom.js dst/mom.sfx.js 
 
-test: test/build/cursor.js
+test: test/build/build.js
 
 server: test
 	python -m SimpleHTTPServer 8080
@@ -19,7 +19,7 @@ dst/mom.sfx.js: $(MAIN) $(SRC)
 	@mkdir -p dst
 	@jspm bundle-sfx ./index $@
 
-test/build/cursor.js: src/cursor.js src/util/cursor.js src/util/mori.js
+test/build/build.js: src/cursor.js src/util/cursor.js src/util/mori.js
 	@mkdir -p test/build
 	@jspm bundle src/cursor + src/util/cursor + src/util/mori $@
 

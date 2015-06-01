@@ -8,8 +8,6 @@ var moriutil = require('./mori');
 
 var util = module.exports = {
   concat: concat,
-  values: values,
-  projection: projection,
   refineAll: refineAll,
   refineFirstWhere: refineFirstWhere,
   refineWhere: refineWhere
@@ -23,20 +21,6 @@ function toArray(x){
 
 function concat(a,b){
   return toArray(a).concat(toArray(b));
-}
-
-function values(keys, defval, cursor){
-  return keys.reduce( function(v,key){
-      return mori.conj(v, cursor.get(key, defval));
-    }, mori.vector()
-  );
-}
-
-function projection(keys, defval, cursor){
-  return keys.reduce( function(h,key){
-      return mori.assoc(h, key, cursor.get(key,defval));
-    }, mori.hashMap()
-  );
 }
 
 
