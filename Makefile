@@ -1,5 +1,9 @@
 MAIN=index.js
 SRC=$(wildcard src/*/*.js)
+CONFIG=config.js package.json Makefile
+BUNDLEMAIN=index
+BUNDLEUTIL=src/util/cursor + src/util/mori
+BUNDLETEST=src/cursor + src/util/cursor + src/util/mori
 
 build: dst/mom.js dst/mom.sfx.js 
 
@@ -11,17 +15,17 @@ server: test
 liveserver:
 	./node_modules/live-server/live-server.js --no-browser
 
-dst/mom.js: $(MAIN) $(SRC)
+dst/mom.js: $(CONFIG) $(MAIN) $(SRC)
 	@mkdir -p dst
-	@jspm bundle ./index $@
+	@jspm bundle $(BUNDLEMAIN) + $(BUNDLEUTIL) $@
 
-dst/mom.sfx.js: $(MAIN) $(SRC)
+dst/mom.sfx.js: $(CONFIG) $(MAIN) $(SRC)
 	@mkdir -p dst
-	@jspm bundle-sfx ./index $@
+	@jspm bundle-sfx $(BUNDLEMAIN) + $(BUNDLEUTIL) $@
 
-test/build/build.js: src/cursor.js src/util/cursor.js src/util/mori.js
+test/build/build.js: $(CONFIG) $(MAIN) $(SRC)
 	@mkdir -p test/build
-	@jspm bundle src/cursor + src/util/cursor + src/util/mori $@
+	@jspm bundle $(BUNDLETEST) $@
 
 clean:
 	@rm -f dst/*
