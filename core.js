@@ -2,12 +2,12 @@
 
 var mori = require('mori');
 var xtend = require('xtend');
-var observ = require('./observ');
+var observ = require('./src/observ');
 var vdom = require('./vdom');
 
 var core = module.exports = {
   atom: atom,
-  cursor: require('./cursor'),
+  cursor: require('./src/cursor'),
   toCursor: toCursor,
   mutable: mori.toJs,
   immutable: mori.toClj,

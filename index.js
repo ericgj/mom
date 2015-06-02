@@ -1,6 +1,6 @@
 'use strict';
 
 module.exports = {
-  core: require('./src/core'),
-  vdom: require('./src/vdom')
+  core: require('./core'),
+  vdom: require('./vdom')
 }

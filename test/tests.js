@@ -6,9 +6,9 @@
 Promise.all([
   System.import('assert'),
   System.import('mori'),
-  System.import('mom/cursor'),
-  System.import('mom/util/cursor'),
-  System.import('mom/util/mori')
+  System.import('src/cursor'),
+  System.import('src/util/cursor'),
+  System.import('src/util/mori')
 ]).then( apply(tests) )
   .then( mocha.run.bind(null,null) );
 

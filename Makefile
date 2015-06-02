@@ -1,8 +1,8 @@
 MAIN=index.js
 SRC=$(wildcard src/*/*.js)
-CONFIG=config.js package.json Makefile
+CONFIG=config.js package.json Makefile 
 BUNDLEMAIN=index
-BUNDLEUTIL=src/util/cursor + src/util/mori
+BUNDLEXTRA=util + hooks
 BUNDLETEST=src/cursor + src/util/cursor + src/util/mori
 
 build: dst/mom.js dst/mom.sfx.js 
@@ -17,13 +17,13 @@ liveserver:
 
 dst/mom.js: $(CONFIG) $(MAIN) $(SRC)
 	@mkdir -p dst
-	@jspm bundle $(BUNDLEMAIN) + $(BUNDLEUTIL) $@
+	@jspm bundle $(BUNDLEMAIN) + $(BUNDLEXTRA) $@
 
 dst/mom.sfx.js: $(CONFIG) $(MAIN) $(SRC)
 	@mkdir -p dst
-	@jspm bundle-sfx $(BUNDLEMAIN) + $(BUNDLEUTIL) $@
+	@jspm bundle-sfx $(BUNDLEMAIN) + $(BUNDLEXTRA) $@
 
-test/build/build.js: $(CONFIG) $(MAIN) $(SRC)
+test/build/build.js: $(MAIN) $(SRC)
 	@mkdir -p test/build
 	@jspm bundle $(BUNDLETEST) $@
 

@@ -15,13 +15,14 @@
   <script>
     Promise.all([
       System.import('index'),
+      System.import('hooks'),
       System.import('mori')
     ]).then( function(libs){
       var core = libs[0].core
         , vdom = libs[0].vdom
-        , hooks = libs[0].hooks
+        , hooks = libs[1]
         , h    = vdom.h
-        , mori = libs[1]
+        , mori = libs[2]
 
       var atom = core.atom({q1: null, started: null, secs: 0});
 

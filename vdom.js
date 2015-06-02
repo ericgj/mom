@@ -7,7 +7,7 @@ var vdom = module.exports = {
   html:   require('virtual-dom/h'),
   svg:    require('virtual-dom/virtual-hyperscript/svg'),
   thunk:  require('vdom-thunk'),
-  main:   require('./main')
+  main:   require('./src/main')
 }
 
 // conventional abbreviations
