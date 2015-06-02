@@ -13,11 +13,15 @@ var util = module.exports = {
 /* Return vector of values for given keys, with given default value for keys
  * that are missing. "Multi-get".
  *
- *   Array<Key> => a => Seq => Vec
+ *   Seq => Array<Key> => a => Vec
  */
-function values(keys, defval, seq){
+function values(seq, keys, defval){
   return keys.reduce( function(v,key){
-      return mori.conj(v, mori.get(seq, key, defval));
+      if (undefined === defval){
+        return mori.conj(v, mori.get(seq, key));
+      } else {
+        return mori.conj(v, mori.get(seq, key, defval));
+      }
     }, mori.vector()
   );
 }
@@ -25,11 +29,15 @@ function values(keys, defval, seq){
 /* Return hashMap of values for given keys, with given default value for keys
  * that are missing.
  *
- *   Array<Key> => a => Seq => HashMap
+ *   Seq => Array<Key> => a => HashMap
  */
-function projection(keys, defval, seq){
+function projection(seq, keys, defval){
   return keys.reduce( function(h,key){
-      return mori.assoc(h, key, mori.get(seq, key, defval));
+      if (undefined === defval){
+        return mori.assoc(h, key, mori.get(seq, key));
+      } else {
+        return mori.assoc(h, key, mori.get(seq, key, defval));
+      }
     }, mori.hashMap()
   );
 }

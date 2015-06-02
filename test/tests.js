@@ -213,13 +213,18 @@ function tests(assert, mori, Cursor, util, moriUtil){
       var atom = mori.toClj(initial);
 
       it('should get values from hashmap, with default value for undefined keys', function(){
-        var subject =  moriUtil.values(['a','c','e'], null, atom); 
+        var subject =  moriUtil.values(atom, ['a','c','e']); 
         assert.deepEqual( ['z','x',null], mori.toJs(subject) );
       });
 
       it('should get values from vector, with default value for undefined indexes', function(){
-        var subject = moriUtil.values([0,2,4,6], 'N/A', mori.get(atom, 'd'));
+        var subject = moriUtil.values(mori.get(atom,'d'), [0,2,4,6], 'N/A');
         assert.deepEqual( ['a','c','N/A','N/A'], mori.toJs(subject) );
+      });
+
+      it('should get values when no default value specified, with same behavior as mori when no default value', function(){
+        var subject =  moriUtil.values(atom, ['a','c','e']); 
+        assert.deepEqual( ['z','x',null], mori.toJs(subject) );
       });
 
     });
@@ -230,13 +235,18 @@ function tests(assert, mori, Cursor, util, moriUtil){
       var atom = mori.toClj(initial);
 
       it('should get projection from hashmap, with default value for undefined keys', function(){
-        var subject =  moriUtil.projection(['a','c','e'], null, atom); 
+        var subject =  moriUtil.projection(atom, ['a','c','e'], null); 
         assert.deepEqual( {'a': 'z', 'c': 'x', 'e': null}, mori.toJs(subject) );
       });
 
       it('should get projection from vector, with default value for undefined indexes', function(){
-        var subject = moriUtil.projection([0,2,4,6], 'N/A', mori.get(atom,'d'));
+        var subject = moriUtil.projection(mori.get(atom,'d'), [0,2,4,6], 'N/A');
         assert.deepEqual( {'0': 'a', '2': 'c', '4': 'N/A', '6': 'N/A'}, mori.toJs(subject) );
+      });
+
+      it('should get projection when no default value specified, with same behavior as mori when no default value', function(){
+        var subject =  moriUtil.projection(atom, ['a','c','e']); 
+        assert.deepEqual( {'a': 'z', 'c': 'x', 'e': null}, mori.toJs(subject) );
       });
 
     });
