@@ -172,24 +172,17 @@ function tests(assert, mori, Cursor, util, moriUtil){
       var cursor = Cursor(getter)([]);
 
       var finder = function(i,rec){ return mori.get(rec,'active',false); };
-      var firstActive = 
-        util.refineFirstWhere.bind(null,
-          moriUtil.keysWhere.bind(null, finder)
-        );
-
-      var allActive = 
-        util.refineWhere.bind(null,
-          moriUtil.keysWhere.bind(null, finder)
-        );
+      var firstActive = util.refineFirstWhere.bind(null, finder); 
+      var allActive = util.refineWhere.bind(null, finder);
 
       it('refineFirstWhere should refine cursor to first record matching predicate', function(){
-        var child = firstActive('folks', cursor);
+        var child = firstActive(cursor.refine('folks'));
         console.debug( 'refineFirstWhere: %o', child.mutable() );
         assert.deepEqual( initial.folks[1], child.mutable() );
       });
 
       it('refineWhere should return vector of refined cursors for each record matching predicate', function(){
-        var children = allActive('folks', cursor);
+        var children = allActive(cursor.refine('folks'));
         var act = mori.toJs( mori.map(function(child){ return child.state(); }, children) );
         console.debug( 'refineWhere: %o', act );
         assert.deepEqual( [ initial.folks[1], initial.folks[2] ], act );

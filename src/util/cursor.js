@@ -4,7 +4,8 @@
 
 var mori = require('mori');
 var isArray = require('x-is-array');
-var moriutil = require('./mori');
+var moriutil = require('./mori')
+  , keysWhere = moriutil.keysWhere
 
 var util = module.exports = {
   concat: concat,
@@ -32,18 +33,16 @@ function refineAll(prefix, cursor){
   );
 }
     
-function refineFirstWhere(f, prefix, cursor){
-  prefix = prefix || [];
+function refineFirstWhere(f, cursor){
   return cursor.refine( 
-    concat( prefix, mori.first(f(cursor.get(prefix))) ) 
+    concat( [], mori.first( keysWhere(f, cursor.get()) ) ) 
   );
 }
 
-function refineWhere(f, prefix, cursor){
-  prefix = prefix || [];
+function refineWhere(f, cursor){
   return mori.map( function(path){
-      return cursor.refine( concat(prefix, path) );
-    }, f(cursor.get(prefix))
+      return cursor.refine( concat([], path) );
+    }, keysWhere(f, cursor.get())
   );
 }
 

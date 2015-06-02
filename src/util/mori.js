@@ -11,7 +11,8 @@ var util = module.exports = {
 }
 
 /* Return vector of values for given keys, with given default value for keys
- * that are missing. "Multi-get".
+ * that are missing. Note mainly useful as an alternative to destructuring in
+ * < ES6 environments. 
  *
  *   Seq => Array<Key> => a => Vec
  */
