@@ -5,9 +5,25 @@
 var mori = require('mori');
 
 var util = module.exports = {
+  reduceKV: reduceKV,
   values: values,
   projection: projection,
   keysWhere: keysWhere
+}
+
+/* Same as built-in mori.reduceKV, except for non-map non-vector collections it
+ * falls back to mori.reduce + using an index as the key.
+ *
+ * Note this bypasses a current bug in mori.reduceKV.
+ *
+ */
+function reduceKV(f, initial, coll){
+  if (mori.isVector(coll) || mori.isMap(coll)) return mori.reduceKV(f,initial,coll);
+  var i=-1;
+  return mori.reduce( function(acc,v){ 
+      i=i+1; return f(acc,i,v); 
+    }, initial, coll
+  );
 }
 
 /* Return vector of values for given keys, with given default value for keys
@@ -52,7 +68,7 @@ function projection(seq, keys, defval){
  */
 function keysWhere(f, seq){ 
   return (
-    mori.reduceKV( function(acc,k,v){
+    reduceKV( function(acc,k,v){
         if ( f(k,v) ) return mori.conj(acc, k);
         return acc;
       }, mori.vector(), seq
