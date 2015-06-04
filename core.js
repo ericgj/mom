@@ -2,8 +2,11 @@
 
 var mori = require('mori');
 var xtend = require('xtend');
+var isArray = require('x-is-array');
 var observ = require('./src/observ');
 var vdom = require('./vdom');
+var cursorutil = require('./src/util/cursor')
+  , refineAll = cursorutil.refineAll
 
 var core = module.exports = {
   atom: atom,
@@ -66,6 +69,13 @@ function build(fn, x, opts){
 }
 
 function buildAll(fn, xs, opts){
+  
+  // helper for when xs is an array
+  if (isArray(xs)) return buildAll(fn, mori.vector.apply(null,xs), opts);
+
+  // helper for when xs is a cursor
+  if ('function' == typeof xs.refine) return buildAll(fn, refineAll([],xs), opts);
+
   return ( 
     mori.reduceKV( function(acc,i,x){
       acc.push( build(fn, x, xtend({index: i}, opts)) );

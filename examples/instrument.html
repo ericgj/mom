@@ -2,6 +2,16 @@
 <html>
 <head>
   <style type="text/css">
+    .instrument-container {
+      border: 1px solid #ccc;
+      padding: 5px;
+    }
+    
+    .instrument > * {
+      display: inline-block;
+      margin-right: 1em;
+    }
+
   </style>
 </head>
 <body>
@@ -14,7 +24,7 @@
   <script>
     Promise.all([
       System.import('index'),
-      System.import('./src/util/cursor'),
+      System.import('./src/util/mori'),
       System.import('mori')
     ]).then( apply( example ) );
     
@@ -29,7 +39,7 @@
       var core = mom.core
         , vdom = mom.vdom
         , h    = vdom.h
-        , refineAll = util.refineAll
+        , second = util.second
         , mori = mori
 
       function subview(item){
@@ -40,19 +50,25 @@
         return (
           h('div', [ 
             h('div', cursor.get('app')),
-            h('ul', core.buildAll( subview, refineAll('list', cursor), opts ) )
+            h('ul', core.buildAll( subview, cursor.refine('list'), opts ) )
           ])
         );
       }
 
       function somethingElse(original){
         return (
-          h('div', {style: { border: "1px solid #ccc", padding: "5px" } }, [
-            h('div', [
-              h('span', "Path:"),
-              h('pre', { style: { display: 'inline-block' } }, original[1].path().join('/') )
+          h('div.instrument-container', [
+            h('div.instrument', [
+              h('div', [
+                h('span', "Component:"),
+                h('pre', { style: { display: 'inline-block' } }, mori.first(original).name )
+              ]),
+              h('div', [
+                h('span', "Path:"),
+                h('pre', { style: { display: 'inline-block' } }, second(original).path().join('/') )
+              ])
             ]),
-            core.build_.apply(null, original)
+            core.build_.apply(null, mori.intoArray(original))
           ])
         );
       }
@@ -64,7 +80,7 @@
         appview, 
         document.getElementById('target'),
         { instrument: function(f,cursor,opts){
-            if (f === subview) return core.build_(somethingElse, [f, cursor, opts]);
+            if (f === subview) return core.build_(somethingElse, mori.vector(f, cursor, opts));
           }
         }
       );
