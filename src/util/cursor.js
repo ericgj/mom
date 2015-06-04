@@ -6,7 +6,6 @@ var mori = require('mori');
 var isArray = require('x-is-array');
 var moriutil = require('./mori')
   , keysWhere = moriutil.keysWhere
-  , reduceKV = moriutil.reduceKV;
 
 var util = module.exports = {
   concat: concat,
@@ -28,7 +27,7 @@ function concat(a,b){
 
 function refineAll(prefix, cursor){
   prefix = prefix || [];
-  return reduceKV( function(acc, k, v){
+  return mori.reduceKV( function(acc, k, v){
       return mori.conj(acc, cursor.refine(concat(prefix,k)) );
     }, mori.vector(), cursor.get(prefix)
   );
