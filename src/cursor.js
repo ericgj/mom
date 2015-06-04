@@ -34,6 +34,8 @@ module.exports = function Cursor_(getter, setter){
   
   Cursor.prototype.state = function(){ return this.get(); }
 
+  Cursor.prototype.path = function(){ return this.base; }
+
   Cursor.prototype.mutable =
   Cursor.prototype.js = function(addr, defval){
     return mori.toJs(this.get(addr,defval));

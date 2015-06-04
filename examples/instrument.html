@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <style type="text/css">
+  </style>
+</head>
+<body>
+  <h1>Instrumentation</h1>
+  <p>Note this is translated (mostly) literally from the instrument example in Om source.</p>
+  <div id="target"></div>
+  <script src="/jspm_packages/system.js"></script>
+  <script src="/config.js"></script>
+  <script src="./build/build.js"></script>
+  <script>
+    Promise.all([
+      System.import('index'),
+      System.import('./src/util/cursor'),
+      System.import('mori')
+    ]).then( apply( example ) );
+    
+    function apply(fn){
+      return function(){
+        return fn.apply(null, arguments[0]);
+      }
+    }
+
+    function example(mom, util, mori){
+
+      var core = mom.core
+        , vdom = mom.vdom
+        , h    = vdom.h
+        , refineAll = util.refineAll
+        , mori = mori
+
+      function subview(item){
+        return h('div', item.get('text'))
+      }
+
+      function appview(cursor, opts){
+        return (
+          h('div', [ 
+            h('div', cursor.get('app')),
+            h('ul', core.buildAll( subview, refineAll('list', cursor), opts ) )
+          ])
+        );
+      }
+
+      function somethingElse(original){
+        return (
+          h('div', {style: { border: "1px solid #ccc", padding: "5px" } }, [
+            h('div', [
+              h('span', "Path:"),
+              h('pre', { style: { display: 'inline-block' } }, original[1].path().join('/') )
+            ]),
+            core.build_.apply(null, original)
+          ])
+        );
+      }
+
+      core.root( 
+        core.atom({ text: "Instrument!", 
+                    list: [ {text: "milk"}, {text: "cookies"}, {text: "apples"} ]
+                  }),
+        appview, 
+        document.getElementById('target'),
+        { instrument: function(f,cursor,opts){
+            if (f === subview) return core.build_(somethingElse, [f, cursor, opts]);
+          }
+        }
+      );
+    }
+
+  </script>
+</body>
+</html>
+

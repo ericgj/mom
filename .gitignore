@@ -2,3 +2,4 @@ jspm_packages
 dst
 node_modules
 test/build
+examples/build
