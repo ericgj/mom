@@ -43,14 +43,14 @@
         , mori = mori
 
       function subview(item){
-        return h('div', item.get('text'))
+        return h('div', {}, item.get('text'))
       }
 
       function appview(cursor, opts){
         return (
           h('div', [ 
-            h('div', cursor.get('app')),
-            h('ul', core.buildAll( subview, cursor.refine('list'), opts ) )
+            h('div', {}, cursor.get('app')),
+            h('ul',  {}, core.buildAll( subview, cursor.refine('list'), opts ) )
           ])
         );
       }

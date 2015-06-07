@@ -6,7 +6,7 @@ TESTBUILDDIR=test/build
 EXDIR=test
 EXBUILDDIR=examples/build
 BUNDLEMAIN=index
-BUNDLEXTRA=util + hooks
+BUNDLEXTRA=util
 BUNDLETEST=src/cursor + src/util/cursor + src/util/mori
 
 build: dst/mom.js dst/mom.sfx.js 
