@@ -116,9 +116,9 @@
       // standard way; and 'globally defined' instrumentation.
 
       function slider(cursor,param,value,min,max){
-        return h('input', { type: 'range', value: value, min: min, max: max,
+        return h('input', { props: { type: 'range', min: min, max: max, value: value },
                             style: {width: '100%'},
-                            onchange: change_param(cursor,param)
+                            on: { change: change_param(cursor,param) }
                           }
                 );
       }

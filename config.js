@@ -22,8 +22,7 @@ System.config({
     "error": "npm:error@4.4.0",
     "mori": "npm:mori@0.3.2",
     "raf": "npm:raf@3.0.0",
-    "vdom-thunk": "npm:vdom-thunk@3.0.0",
-    "virtual-dom": "npm:virtual-dom@2.0.1",
+    "snabbdom": "npm:snabbdom@0.1.5",
     "x-is-array": "npm:x-is-array@0.1.0",
     "xtend": "npm:xtend@4.0.0",
     "github:jspm/nodelibs-assert@0.1.0": {
@@ -49,23 +48,10 @@ System.config({
       "string-template": "npm:string-template@0.2.1",
       "xtend": "npm:xtend@4.0.0"
     },
-    "npm:ev-store@7.0.0": {
-      "individual": "npm:individual@3.0.0"
-    },
-    "npm:global@4.3.0": {
-      "min-document": "npm:min-document@2.14.1",
-      "process": "npm:process@0.5.2"
-    },
     "npm:inherits@2.0.1": {
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
-    "npm:min-document@2.14.1": {
-      "dom-walk": "npm:dom-walk@0.1.1"
-    },
     "npm:mori@0.3.2": {
-      "process": "github:jspm/nodelibs-process@0.1.1"
-    },
-    "npm:next-tick@0.2.2": {
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
     "npm:performance-now@0.1.4": {
@@ -75,19 +61,12 @@ System.config({
       "performance-now": "npm:performance-now@0.1.4",
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
+    "npm:snabbdom@0.1.5": {
+      "process": "github:jspm/nodelibs-process@0.1.1"
+    },
     "npm:util@0.10.3": {
       "inherits": "npm:inherits@2.0.1",
       "process": "github:jspm/nodelibs-process@0.1.1"
-    },
-    "npm:virtual-dom@2.0.1": {
-      "browser-split": "npm:browser-split@0.0.1",
-      "error": "npm:error@4.4.0",
-      "ev-store": "npm:ev-store@7.0.0",
-      "global": "npm:global@4.3.0",
-      "is-object": "npm:is-object@1.0.1",
-      "next-tick": "npm:next-tick@0.2.2",
-      "x-is-array": "npm:x-is-array@0.1.0",
-      "x-is-string": "npm:x-is-string@0.1.0"
     }
   }
 });

@@ -1,16 +1,32 @@
 'use strict';
 
+var snabbdom = require('snabbdom');
+var main = require('./src/main');
+
+var defaultModules = [
+  require('snabbdom/modules/class'), // makes it easy to toggle classes
+  require('snabbdom/modules/props'), // for setting properties on DOM elements
+  require('snabbdom/modules/style'), // handles styling on elements with support for animations
+  require('snabbdom/modules/eventlisteners') // attaches event listeners
+];
+
+var modules = [];
+
 var vdom = module.exports = {
-  diff:   require('virtual-dom/diff'),
-  patch:  require('virtual-dom/patch'),
-  create: require('virtual-dom/create-element'),
-  html:   require('virtual-dom/h'),
-  svg:    require('virtual-dom/virtual-hyperscript/svg'),
-  thunk:  require('vdom-thunk'),
-  main:   require('./src/main')
+  patch:  patch,
+  h:      require('snabbdom/h'),
+  vnode:  require('snabbdom/vnode'),
+  thunk:  require('snabbdom/thunk'),
+  modules: setModules,
+  main:   _main
 }
 
-// conventional abbreviations
-vdom.h = function h(){ return vdom.html.apply(vdom.html, arguments); }  
-vdom.s = function s(){ return vdom.svg.apply(vdom.svg, arguments); }
+function setModules(ms){ modules = ms; }
 
+function patch(){
+  return snabbdom.init( defaultModules.concat(modules) );
+}
+
+function _main(app,el){
+  return main(patch(), app, el);
+}

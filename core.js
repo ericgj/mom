@@ -17,11 +17,7 @@ var core = module.exports = {
   root: root,
   build: build,
   buildAll: buildAll,
-  build_: build_,
-  options: {
-    main: {},
-    dom: { emptyTarget: false }
-  }
+  build_: build_
 }
 
 function atom(o){
@@ -37,25 +33,19 @@ function toCursor(atom){
 
 /* Mount root component and bind atom updates to RAF.
 
-   Note: this is *mostly* idempotent, assuming your target container can be
-   emptied each time and the emptyTarget option is set. Otherwise, you will
-   need to manage clearing out the target yourself before calling root again.
 */
 function root(atom, app, target, opts){
   var cursor = toCursor(atom);
-  var loop = main( build.bind(null, app, cursor, opts) );
+  var loop = vdom.main( build.bind(null, app, cursor, opts), target );
   
-  atom(loop.update);
-
-  if (!!core.options.dom.emptyTarget) empty(target);
-  target.appendChild(loop.target);
+  atom(loop);
   
   return loop;
 }
 
 
 /* Render and return root component (vnode) using current atom state.
-   Does not bind to the DOM.  Useful for testing.
+   Does not bind to the DOM or apply patches.  Useful for testing.
 */
 function vroot(atom, app, opts){
   var cursor = toCursor(atom);
@@ -86,20 +76,6 @@ function buildAll(fn, xs, opts){
 
 
 
-function main(view){
-  return vdom.main( 
-    xtend(
-      {
-        diff: vdom.diff,
-        patch: vdom.patch,
-        create: vdom.create
-      }, core.options.main
-    ),
-    view
-  );  
-}
-
-
 function _build(instrument, fn, x, opts){
   var ret;
   if (instrument){
@@ -118,7 +94,3 @@ function build_(fn, x, opts){
   return fn(x,opts);
 }
 
-function empty(el, node){
-  while (node = el.firstChild) el.removeChild(node);
-  return el;
-}

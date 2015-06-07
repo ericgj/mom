@@ -10,8 +10,7 @@
       "error": "npm:error@^4.4.0",
       "mori": "npm:mori@^0.3.2",
       "raf": "npm:raf@^3.0.0",
-      "vdom-thunk": "npm:vdom-thunk@^3.0.0",
-      "virtual-dom": "npm:virtual-dom@^2.0.1",
+      "snabbdom": "npm:snabbdom@^0.1.5",
       "x-is-array": "npm:x-is-array@^0.1.0",
       "xtend": "npm:xtend@^4.0.0"
     },

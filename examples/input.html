@@ -70,10 +70,10 @@
       // note value hook
       function input(cursor){
         return (
-          h('form', { onsubmit: function(){} }, [
-            h('label', { for: 'q1' }, 'What is your favorite color?' ),
-            h('input', { type: 'text', name: 'q1', value: hooks.InitValue(cursor.get('q1',null)), 
-                         onchange: updateInput(cursor, 'q1')
+          h('form', { on: { submit: function(){} } }, [
+            h('label', { props: { for: 'q1' }}, 'What is your favorite color?' ),
+            h('input', { props: { type: 'text', name: 'q1', value: cursor.get('q1',null) }, 
+                         on: { change: updateInput(cursor, 'q1') }
                        }
             )
           ])
